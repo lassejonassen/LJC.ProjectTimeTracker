@@ -1,4 +1,5 @@
 ﻿using ProjectTimeTracker.Domain.Projects.Aggregates;
+using ProjectTimeTracker.Domain.Projects.Entities;
 
 namespace ProjectTimeTracker.Domain.Projects.Errors;
 
@@ -23,4 +24,28 @@ public static class ProjectErrors
 
     public static readonly Error NotFound
         = new($"{Prefix}.{nameof(NotFound)}", $"The project was not found", ErrorType.Failure);
+
+
+
+    /*
+     * TIME ENTRY ERRORS
+     */
+    public static readonly Error TimeEntryNotesTooLong
+       = new($"{Prefix}.{nameof(TimeEntryNotesTooLong)}", $"The notes must not exceed {TimeEntry.NotesMaxLength} characters", ErrorType.Validation);
+
+    public static readonly Error TimeEntryInvalidStatus
+        = new($"{Prefix}.{nameof(TimeEntryInvalidStatus)}", $"The specified status is invalid", ErrorType.Failure);
+
+    public static readonly Error TimeEntryOnlyDraftInvalidStateChange
+        = new($"{Prefix}.{nameof(TimeEntryOnlyDraftInvalidStateChange)}", $"The state transition is invalid: Only drafts can be submitted", ErrorType.Failure);
+
+    public static readonly Error TimeEntrySubmittedEntryInvalidStateChange
+        = new($"{Prefix}.{nameof(TimeEntrySubmittedEntryInvalidStateChange)}", $"The state transition is invalid: Submitted entries must be Approved or Rejected", ErrorType.Failure);
+    
+    public static readonly Error TimeEntryApprovedEntriesAreFinal
+       = new($"{Prefix}.{nameof(TimeEntryApprovedEntriesAreFinal)}", $"The state transition is invalid: Approved entries are final and cannot be changed", ErrorType.Failure);
+
+    public static readonly Error TimeEntryRejectedEntriesMustBeMovedToDraft
+       = new($"{Prefix}.{nameof(TimeEntryApprovedEntriesAreFinal)}", $"The state transition is invalid: Rejected entries must be moved back to Draft to be edited", ErrorType.Failure);
+
 }
