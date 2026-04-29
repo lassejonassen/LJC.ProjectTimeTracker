@@ -1,5 +1,16 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="Add-Migration.ps1" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+  </Folder>
   <Folder Name="/src/">
+    <Project Path="src/ProjectTimeTracker.Application/ProjectTimeTracker.Application.csproj" />
+    <Project Path="src/ProjectTimeTracker.DbUp/ProjectTimeTracker.DbUp.csproj" />
     <Project Path="src/ProjectTimeTracker.Domain/ProjectTimeTracker.Domain.csproj" />
+    <Project Path="src/ProjectTimeTracker.Infrastructure/ProjectTimeTracker.Infrastructure.csproj" />
+    <Project Path="src/ProjectTimeTracker.SharedKernel/ProjectTimeTracker.SharedKernel.csproj" />
+    <Project Path="src/ProjectTimeTracker.WebAPI.Contracts/ProjectTimeTracker.WebAPI.Contracts.csproj" />
+    <Project Path="src/ProjectTimeTracker.WebAPI/ProjectTimeTracker.WebAPI.csproj" />
   </Folder>
 </Solution>

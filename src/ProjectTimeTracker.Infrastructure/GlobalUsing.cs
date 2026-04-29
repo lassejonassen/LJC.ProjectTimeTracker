@@ -1,0 +1,2 @@
+﻿global using Microsoft.EntityFrameworkCore;
+global using ProjectTimeTracker.Application.Abstractions;

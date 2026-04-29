@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<ItemGroup>
+		<PackageReference Include="Carter" />
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+		<PackageReference Include="Scalar.AspNetCore" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\ProjectTimeTracker.Application\ProjectTimeTracker.Application.csproj" />
+		<ProjectReference Include="..\ProjectTimeTracker.Infrastructure\ProjectTimeTracker.Infrastructure.csproj" />
+		<ProjectReference Include="..\ProjectTimeTracker.WebAPI.Contracts\ProjectTimeTracker.WebAPI.Contracts.csproj" />
+	</ItemGroup>
+
+</Project>

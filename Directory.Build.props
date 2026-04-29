@@ -1,0 +1,16 @@
+<Project>
+  <PropertyGroup>
+	  <TargetFramework>net10.0</TargetFramework>
+	  <ImplicitUsings>enable</ImplicitUsings>
+	  <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+	<PropertyGroup>
+		<Title>LJC - Project Time Tracker</Title>
+		<Authors>Lasse Jonassen Consulting</Authors>
+		<Company>Lasse Jonassen Consulting</Company>
+		<Product>Project Time Tracker</Product>
+		<Description>Time tracker for projects</Description>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+	</PropertyGroup>
+</Project>
