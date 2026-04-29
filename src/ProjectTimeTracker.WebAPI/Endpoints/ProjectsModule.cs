@@ -3,17 +3,18 @@ using ProjectTimeTracker.Application.Abstractions.Messaging;
 using ProjectTimeTracker.Application.Projects.Commands;
 using ProjectTimeTracker.Application.Projects.Queries;
 using ProjectTimeTracker.WebAPI.Contracts.Projects;
+using ProjectTimeTracker.WebAPI.Extensions;
 using Scalar.AspNetCore;
 
 namespace ProjectTimeTracker.WebAPI.Endpoints;
 
 public class ProjectsModule : ICarterModule
 {
-
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/projects")
-            .WithTags("Projects");
+            .WithTags("Projects")
+            .WithDefaultResponses();
 
         group.MapGet("/", async (IMediator mediator, CancellationToken cancellationToken) =>
         {
@@ -37,7 +38,10 @@ public class ProjectsModule : ICarterModule
         })
             .WithName("GetAllProjects")
             .WithDisplayName("Get all projects")
-            .WithDescription("Get all projects").WithBadge("GetAll");
+            .WithDescription("Get all projects").WithBadge("GetAll")
+            .Produces<ProjectListResponseDTO>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status204NoContent);
+
 
         group.MapGet("/{projectId:guid}", async (Guid projectId, IMediator mediator, CancellationToken cancellationToken) =>
         {
@@ -45,7 +49,7 @@ public class ProjectsModule : ICarterModule
             var result = await mediator.Send(query, cancellationToken);
 
             if (result.IsFailure)
-                return Results.NotFound();
+                return result.Error.Handle();
 
             var _result = new ProjectResponseDTO
             {
@@ -60,7 +64,9 @@ public class ProjectsModule : ICarterModule
             return Results.Ok(_result);
         })
             .WithName("GetProjectById")
-            .WithDisplayName("Get project by Id");
+            .WithDisplayName("Get project by Id")
+            .Produces<ProjectResponseDTO>(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapPost("/", async (ProjectCreateRequestDTO request, IMediator mediator, CancellationToken cancellationToken) =>
         {
@@ -69,56 +75,65 @@ public class ProjectsModule : ICarterModule
             var result = await mediator.Send(command, cancellationToken);
 
             if (result.IsFailure)
-                return Results.BadRequest();
+                return result.Error.Handle();
 
             return Results.CreatedAtRoute("GetProjectById", new { projectId = result.Value }, result.Value);
         })
-            .WithDisplayName("Create Project");
+            .WithDisplayName("Create Project")
+            .Produces<Guid>(StatusCodes.Status201Created)
+            .ProducesProblem(StatusCodes.Status400BadRequest);
 
         group.MapPut("/{projectId:guid}", async (Guid projectId, ProjectUpdateRequestDTO request, IMediator mediator, CancellationToken cancellationToken) =>
         {
             if (projectId != request.ProjectId)
-                return Results.BadRequest("ProjectId from the route does not match the ProjectId in the payload");
+                return ResultsExtensions.MismatchedId(projectId, request.ProjectId);
 
             var command = new UpdateProjectCommand(request.ProjectId, request.Name, request.Description);
 
             var result = await mediator.Send(command, cancellationToken);
 
             if (result.IsFailure)
-                return Results.BadRequest();
+                return result.Error.Handle();
 
             return Results.NoContent();
-        });
+        })
+            .Produces(StatusCodes.Status204NoContent)
+        .ProducesProblem(StatusCodes.Status400BadRequest)
+        .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapPatch("/{projectId:guid}/close", async (Guid projectId, ProjectCloseRequestDTO request, IMediator mediator, CancellationToken cancellationToken) =>
         {
             if (projectId != request.ProjectId)
-                return Results.BadRequest("ProjectId from the route does not match the ProjectId in the payload");
+                return ResultsExtensions.MismatchedId(projectId, request.ProjectId);
 
             var command = new CloseProjectCommand(request.ProjectId);
 
             var result = await mediator.Send(command, cancellationToken);
 
             if (result.IsFailure)
-                return Results.BadRequest();
+                return result.Error.Handle();
 
             return Results.NoContent();
-        });
+        })
+            .Produces(StatusCodes.Status204NoContent)
+        .ProducesProblem(StatusCodes.Status400BadRequest);
 
         group.MapPatch("/{projectId:guid}/reopen", async (Guid projectId, ProjectReopenRequestDTO request, IMediator mediator, CancellationToken cancellationToken) =>
         {
             if (projectId != request.ProjectId)
-                return Results.BadRequest("ProjectId from the route does not match the ProjectId in the payload");
+                return ResultsExtensions.MismatchedId(projectId, request.ProjectId);
 
             var command = new ReopenProjectCommand(request.ProjectId);
 
             var result = await mediator.Send(command, cancellationToken);
 
             if (result.IsFailure)
-                return Results.BadRequest();
+                return result.Error.Handle();
 
             return Results.NoContent();
-        });
+        })
+            .Produces(StatusCodes.Status204NoContent)
+        .ProducesProblem(StatusCodes.Status400BadRequest);
 
         group.MapDelete("/{projectId:guid}", async (Guid projectId, IMediator mediator, CancellationToken cancellationToken) =>
         {
@@ -127,9 +142,18 @@ public class ProjectsModule : ICarterModule
             var result = await mediator.Send(command, cancellationToken);
 
             if (result.IsFailure)
-                return Results.BadRequest();
+                return result.Error.Handle();
 
             return Results.NoContent();
-        });
+        })
+            .Produces(StatusCodes.Status204NoContent)
+        .ProducesProblem(StatusCodes.Status404NotFound);
+
+        var timeEntriesGroup = group.MapGroup("/{projectId:guid}/time-entries")
+            .WithTags("Project Time Entries");
+
+        timeEntriesGroup.MapGet("/", () => "Entries")
+            .WithName("GetProjectTimeEntries")
+            .WithDisplayName("Get Time Entries");
     }
 }
