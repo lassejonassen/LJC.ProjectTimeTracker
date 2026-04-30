@@ -9,7 +9,9 @@ internal sealed class ProjectRepository(ApplicationDbContext context)
 {
     public async Task<IReadOnlyCollection<Project>> GetAllAsync(CancellationToken cancellationToken)
     {
-        return await DbContext.Set<Project>().ToListAsync(cancellationToken);
+        return await DbContext.Set<Project>()
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
     }
 
     public async Task<Project?> GetByIdAsync(Guid id, CancellationToken cancellationToken)

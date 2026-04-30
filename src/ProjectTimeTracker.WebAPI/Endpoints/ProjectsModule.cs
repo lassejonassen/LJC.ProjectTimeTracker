@@ -1,8 +1,10 @@
 ﻿using Carter;
 using ProjectTimeTracker.Application.Abstractions.Messaging;
 using ProjectTimeTracker.Application.Projects.Commands;
+using ProjectTimeTracker.Application.Projects.Commands.TimeEntries;
 using ProjectTimeTracker.Application.Projects.Queries;
 using ProjectTimeTracker.WebAPI.Contracts.Projects;
+using ProjectTimeTracker.WebAPI.Contracts.Projects.TimeEntries;
 using ProjectTimeTracker.WebAPI.Extensions;
 using Scalar.AspNetCore;
 
@@ -151,5 +153,129 @@ public class ProjectsModule : ICarterModule
 
         var timeEntriesGroup = group.MapGroup("/{projectId:guid}/time-entries")
             .WithTags("Project Time Entries");
+
+        timeEntriesGroup.MapPost("/", async (Guid projectId, ProjectTimeEntryCreateRequestDTO request, IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            if (projectId != request.ProjectId)
+                return ResultsExtensions.MismatchedId(projectId, request.ProjectId);
+
+            var command = new CreateProjectTimeEntryCommand(projectId, "SOME USER", request.Notes, request.Hours);
+
+            var result = await mediator.Send(command, cancellationToken);
+
+            if (result.IsFailure)
+                return result.Error.Handle();
+
+            return Results.NoContent();
+        })
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status404NotFound);
+
+
+        timeEntriesGroup.MapPut("/{timeEntryId:guid}", async(Guid projectId, Guid timeEntryId, ProjectTimeEntryUpdateRequestDTO request, IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            if (projectId != request.ProjectId)
+                return ResultsExtensions.MismatchedId(projectId, request.ProjectId);
+
+            if (timeEntryId != request.TimeEntryId)
+                return ResultsExtensions.MismatchedId(projectId, request.TimeEntryId);
+
+            var command = new UpdateProjectTimeEntryCommand(projectId, timeEntryId, request.Notes, request.Hours);
+
+            var result = await mediator.Send(command, cancellationToken);
+
+            if (result.IsFailure)
+                return result.Error.Handle();
+
+            return Results.NoContent();
+        })
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status404NotFound);
+
+        timeEntriesGroup.MapPatch("/{timeEntryId:guid}/approve", async (Guid projectId, Guid timeEntryId, ProjectTimeEntryStatusChangeRequestDTO request, IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            if (projectId != request.ProjectId)
+                return ResultsExtensions.MismatchedId(projectId, request.ProjectId);
+
+            if (timeEntryId != request.TimeEntryId)
+                return ResultsExtensions.MismatchedId(projectId, request.TimeEntryId);
+
+            var command = new ApproveProjectTimeEntryCommand(projectId, timeEntryId);
+
+            var result = await mediator.Send(command, cancellationToken);
+
+            if (result.IsFailure)
+                return result.Error.Handle();
+
+            return Results.NoContent();
+        })
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status404NotFound);
+
+        timeEntriesGroup.MapPatch("/{timeEntryId:guid}/reject", async (Guid projectId, Guid timeEntryId, ProjectTimeEntryStatusChangeRequestDTO request, IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            if (projectId != request.ProjectId)
+                return ResultsExtensions.MismatchedId(projectId, request.ProjectId);
+
+            if (timeEntryId != request.TimeEntryId)
+                return ResultsExtensions.MismatchedId(projectId, request.TimeEntryId);
+
+            var command = new RejectProjectTimeEntryCommand(projectId, timeEntryId);
+
+            var result = await mediator.Send(command, cancellationToken);
+
+            if (result.IsFailure)
+                return result.Error.Handle();
+
+            return Results.NoContent();
+        })
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status404NotFound);
+
+        timeEntriesGroup.MapPatch("/{timeEntryId:guid}/reopen", async (Guid projectId, Guid timeEntryId, ProjectTimeEntryStatusChangeRequestDTO request, IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            if (projectId != request.ProjectId)
+                return ResultsExtensions.MismatchedId(projectId, request.ProjectId);
+
+            if (timeEntryId != request.TimeEntryId)
+                return ResultsExtensions.MismatchedId(projectId, request.TimeEntryId);
+
+            var command = new ReopenProjectTimeEntryCommand(projectId, timeEntryId);
+
+            var result = await mediator.Send(command, cancellationToken);
+
+            if (result.IsFailure)
+                return result.Error.Handle();
+
+            return Results.NoContent();
+        })
+        .Produces(StatusCodes.Status204NoContent)
+        .ProducesProblem(StatusCodes.Status400BadRequest)
+        .ProducesProblem(StatusCodes.Status404NotFound);
+
+        timeEntriesGroup.MapPatch("/{timeEntryId:guid}/submit", async (Guid projectId, Guid timeEntryId, ProjectTimeEntryStatusChangeRequestDTO request, IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            if (projectId != request.ProjectId)
+                return ResultsExtensions.MismatchedId(projectId, request.ProjectId);
+
+            if (timeEntryId != request.TimeEntryId)
+                return ResultsExtensions.MismatchedId(projectId, request.TimeEntryId);
+
+            var command = new SubmitProjectTimeEntryCommand(projectId, timeEntryId);
+
+            var result = await mediator.Send(command, cancellationToken);
+
+            if (result.IsFailure)
+                return result.Error.Handle();
+
+            return Results.NoContent();
+        })
+        .Produces(StatusCodes.Status204NoContent)
+        .ProducesProblem(StatusCodes.Status400BadRequest)
+        .ProducesProblem(StatusCodes.Status404NotFound);
     }
 }
