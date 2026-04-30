@@ -1,0 +1,76 @@
+name: CD - Release Promotion
+
+on:
+  release:
+    types: [ published ]
+
+jobs:
+  # --- STAGE 1: BUILD THE OFFICIAL ARTIFACT ---
+  build-release:
+    name: Build SemVer Image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Docker Metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ secrets.DOCKERHUB_USERNAME }}/ljt-project-time-tracker
+          tags: |
+            # Extracts 'v1.2.3' from the GitHub Release tag
+            type=semver,pattern={{version}}
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Build and Push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./src/ProjectTimeTracker.WebAPI/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+
+  # # --- STAGE 2: DEPLOY TO TEST ---
+  # deploy-test:
+  #   name: Deploy to Test (On-Prem)
+  #   needs: build-release
+  #   runs-on: ubuntu-latest
+  #   environment: test # Automatic deployment to the Test environment
+  #   steps:
+  #     - name: Update Test Servers
+  #       uses: appleboy/ssh-action@v1.0.3
+  #       with:
+  #         host: ${{ secrets.TEST_SERVER_IP }}
+  #         username: ${{ secrets.SSH_USER }}
+  #         key: ${{ secrets.SSH_PRIVATE_KEY }}
+  #         # Promotes the exact tag from the release event
+  #         script: |
+  #           docker pull my-registry.io/my-app:${{ github.event.release.tag_name }}
+  #           docker stop my-app || true
+  #           docker rm my-app || true
+  #           docker run -d --name my-app my-registry.io/my-app:${{ github.event.release.tag_name }}
+
+  # # --- STAGE 3: PROMOTION TO PRODUCTION ---
+  # deploy-prod:
+  #   name: Promote to Production (On-Prem)
+  #   needs: deploy-test
+  #   runs-on: ubuntu-latest
+  #   environment: production # Requires 'Reviewers' approval in GitHub UI
+  #   steps:
+  #     - name: Update Production Cluster
+  #       uses: appleboy/ssh-action@v1.0.3
+  #       with:
+  #         host: ${{ secrets.PROD_SERVER_LIST }} # Multiple on-prem IPs
+  #         username: ${{ secrets.SSH_USER }}
+  #         key: ${{ secrets.SSH_PRIVATE_KEY }}
+  #         script: |
+  #           docker pull my-registry.io/my-app:${{ github.event.release.tag_name }}
+  #           docker stop my-app || true
+  #           docker rm my-app || true
+  #           docker run -d --name my-app my-registry.io/my-app:${{ github.event.release.tag_name }}
