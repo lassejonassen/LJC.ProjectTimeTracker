@@ -1,4 +1,4 @@
-﻿
+﻿using ProjectTimeTracker.Domain.Projects.Entities;
 using ProjectTimeTracker.Domain.Projects.Enums;
 using ProjectTimeTracker.Domain.Projects.Errors;
 
@@ -15,6 +15,9 @@ public sealed class Project : AggregateRoot
     public string Name { get; private set; } = string.Empty;
     public string? Description { get; private set; }
     public ProjectStatus Status { get; private set; }
+
+    private readonly List<TimeEntry> _timeEntries = [];
+    public IReadOnlyCollection<TimeEntry> TimeEntries => _timeEntries.AsReadOnly();
 
     public static Result<Project> Create(string name, string? description, DateTime utcNow)
     {
@@ -74,6 +77,84 @@ public sealed class Project : AggregateRoot
 
         if (description is not null && description.Length > DescriptionMaxLength)
             return Result.Failure(ProjectErrors.DescriptionTooLong);
+
+        return Result.Success();
+    }
+
+    public Result AddTimeEntry(string userId, string? notes, decimal hours, DateTime utcNow)
+    {
+        var timeEntry = TimeEntry.Create(
+            Id,
+            userId,
+            notes,
+            hours, utcNow);
+
+        if (timeEntry.IsFailure)
+            return Result.Failure(timeEntry.Error);
+
+        _timeEntries.Add(timeEntry.Value);
+
+        return Result.Success();
+    }
+
+    public Result UpdateTimeEntry(Guid timeEntryId, string? notes, decimal hours)
+    {
+        var timeEntry = _timeEntries.FirstOrDefault(x => x.Id == timeEntryId);
+
+        if (timeEntry is null)
+            return Result.Failure(ProjectErrors.TimeEntryNotFound);
+
+        var result = timeEntry.Update(notes, hours);
+
+        if (result.IsFailure)
+            return Result.Failure(result.Error);
+
+        return Result.Success();
+    }
+
+    public Result SubmitTimeEntry(Guid timeEntryId)
+    {
+        var timeEntry = _timeEntries.FirstOrDefault(x => x.Id == timeEntryId);
+
+        if (timeEntry is null)
+            return Result.Failure(ProjectErrors.TimeEntryNotFound);
+
+        timeEntry.Submit();
+
+        return Result.Success();
+    }
+
+    public Result ApproveTimeEntry(Guid timeEntryId)
+    {
+        var timeEntry = _timeEntries.FirstOrDefault(x => x.Id == timeEntryId);
+
+        if (timeEntry is null)
+            return Result.Failure(ProjectErrors.TimeEntryNotFound);
+
+        timeEntry.Approve();
+
+        return Result.Success();
+    }
+
+    public Result RejectTimeEntry(Guid timeEntryId)
+    {
+        var timeEntry = _timeEntries.FirstOrDefault(x => x.Id == timeEntryId);
+
+        if (timeEntry is null)
+            return Result.Failure(ProjectErrors.TimeEntryNotFound);
+
+        timeEntry.Reject();
+        return Result.Success();
+    }
+
+    public Result ReopenTimeEntry(Guid timeEntryId)
+    {
+        var timeEntry = _timeEntries.FirstOrDefault(x => x.Id == timeEntryId);
+
+        if (timeEntry is null)
+            return Result.Failure(ProjectErrors.TimeEntryNotFound);
+
+        timeEntry.Reopen();
 
         return Result.Success();
     }

@@ -23,7 +23,7 @@ public static class ProjectErrors
         = new($"{Prefix}.{nameof(AlreadyOpen)}", $"The project is already open", ErrorType.Failure);
 
     public static readonly Error NotFound
-        = new($"{Prefix}.{nameof(NotFound)}", $"The project was not found", ErrorType.Failure);
+        = new($"{Prefix}.{nameof(NotFound)}", $"The project was not found", ErrorType.NotFound);
 
 
 
@@ -48,4 +48,6 @@ public static class ProjectErrors
     public static readonly Error TimeEntryRejectedEntriesMustBeMovedToDraft
        = new($"{Prefix}.{nameof(TimeEntryApprovedEntriesAreFinal)}", $"The state transition is invalid: Rejected entries must be moved back to Draft to be edited", ErrorType.Failure);
 
+    public static readonly Error TimeEntryNotFound
+       = new($"{Prefix}.{nameof(TimeEntryNotFound)}", $"The time entry was not found", ErrorType.NotFound);
 }

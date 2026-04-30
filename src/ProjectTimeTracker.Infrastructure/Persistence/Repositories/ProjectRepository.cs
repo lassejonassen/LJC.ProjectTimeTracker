@@ -15,6 +15,7 @@ internal sealed class ProjectRepository(ApplicationDbContext context)
     public async Task<Project?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await DbContext.Set<Project>()
+           .Include(x => x.TimeEntries)
            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 }

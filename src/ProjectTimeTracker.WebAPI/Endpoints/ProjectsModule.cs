@@ -151,9 +151,5 @@ public class ProjectsModule : ICarterModule
 
         var timeEntriesGroup = group.MapGroup("/{projectId:guid}/time-entries")
             .WithTags("Project Time Entries");
-
-        timeEntriesGroup.MapGet("/", () => "Entries")
-            .WithName("GetProjectTimeEntries")
-            .WithDisplayName("Get Time Entries");
     }
 }

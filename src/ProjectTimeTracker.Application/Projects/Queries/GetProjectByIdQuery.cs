@@ -24,7 +24,18 @@ public sealed class GetProjectByIdQueryHandler(
             Description = project.Description,
             Status = project.Status.ToString(),
             CreatedAtUtc = project.CreatedAtUtc,
-            UpdatedAtUtc = project.UpdatedAtUtc
+            UpdatedAtUtc = project.UpdatedAtUtc,
+            TimeEntries = [.. project.TimeEntries.Select(x => new TimeEntryDTO
+            {
+                Id = x.Id,
+                ProjectId = x.ProjectId,
+                Notes = x.Notes,
+                Hours = x.Hours,
+                Status = x.Status.ToString(),
+                UserId = x.UserId,
+                CreatedAtUtc = x.CreatedAtUtc,
+                UpdatedAtUtc = x.UpdatedAtUtc,
+            })]
         });
     }
 }

@@ -24,5 +24,10 @@ internal sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
             .HasConversion<string>()
             .HasDefaultValue(ProjectStatus.Open)
             .IsRequired(true);
+
+        builder.HasMany(x => x.TimeEntries)
+            .WithOne(x => x.Project)
+            .HasForeignKey(x => x.ProjectId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
