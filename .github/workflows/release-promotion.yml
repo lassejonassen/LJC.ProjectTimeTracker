@@ -11,11 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Docker Metadata
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ${{ secrets.DOCKERHUB_USERNAME }}/ljt-project-time-tracker
           tags: |
@@ -23,13 +23,13 @@ jobs:
             type=semver,pattern={{version}}
 
       - name: Login to Docker Hub
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Build and Push
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: ./src/ProjectTimeTracker.WebAPI/Dockerfile
@@ -60,6 +60,7 @@ jobs:
   # deploy-prod:
   #   name: Promote to Production (On-Prem)
   #   needs: deploy-test
+  #   if: github.event.release.prerelease == false
   #   runs-on: ubuntu-latest
   #   environment: production # Requires 'Reviewers' approval in GitHub UI
   #   steps:
