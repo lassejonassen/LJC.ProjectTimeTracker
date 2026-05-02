@@ -61,6 +61,17 @@ public class ProjectsModule : ICarterModule
                 Status = result.Value.Status,
                 CreatedAtUtc = result.Value.CreatedAtUtc,
                 UpdatedAtUtc = result.Value.UpdatedAtUtc,
+                TimeEntries = result.Value.TimeEntries?.Select(x => new TimeEntryResponseDTO
+                {
+                    Id = x.Id,
+                    CreatedAtUtc = x.CreatedAtUtc,
+                    Hours = x.Hours,
+                    ProjectId = x.ProjectId,
+                    Status = x.Status,
+                    UpdatedAtUtc = x.UpdatedAtUtc,
+                    UserId = x.UserId,
+                    Notes = x.Notes
+                }).ToList()
             };
 
             return Results.Ok(_result);

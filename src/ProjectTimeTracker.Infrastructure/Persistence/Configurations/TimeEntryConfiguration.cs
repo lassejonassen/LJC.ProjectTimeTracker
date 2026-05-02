@@ -10,6 +10,10 @@ internal sealed class TimeEntryConfiguration : IEntityTypeConfiguration<TimeEntr
     {
         builder.ToTable("TimeEntries");
 
+        builder.Property(x => x.Id)
+            .ValueGeneratedNever()
+            .IsRequired();
+
         builder.HasKey(x => x.Id);
 
         builder.HasOne(x => x.Project)
@@ -25,6 +29,7 @@ internal sealed class TimeEntryConfiguration : IEntityTypeConfiguration<TimeEntr
 
         builder.Property(x => x.Hours)
             .HasDefaultValue(0.0)
+            //.HasPrecision()
             .IsRequired(true);
 
         builder.Property(x => x.Status)
