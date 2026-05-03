@@ -13,4 +13,7 @@
     <Project Path="src/ProjectTimeTracker.WebAPI.Contracts/ProjectTimeTracker.WebAPI.Contracts.csproj" />
     <Project Path="src/ProjectTimeTracker.WebAPI/ProjectTimeTracker.WebAPI.csproj" />
   </Folder>
+  <Project Path="docker-compose.dcproj">
+    <Build />
+  </Project>
 </Solution>

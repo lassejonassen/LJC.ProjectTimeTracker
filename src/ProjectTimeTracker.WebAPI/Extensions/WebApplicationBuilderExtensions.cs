@@ -16,6 +16,8 @@ public static class WebApplicationBuilderExtensions
 
         builder.Services.AddProblemDetails();
 
+        builder.Services.AddCors();
+
         return builder;
     }
 }

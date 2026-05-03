@@ -20,6 +20,13 @@ public static class WebApplicationExtensions
 
         app.MapCarter();
 
+        app.UseCors(opt =>
+        {
+            opt.AllowAnyHeader();
+            opt.AllowAnyMethod();
+            opt.AllowAnyOrigin();
+        });
+
         app.ApplyDatabaseMigrations();
 
         return app;
