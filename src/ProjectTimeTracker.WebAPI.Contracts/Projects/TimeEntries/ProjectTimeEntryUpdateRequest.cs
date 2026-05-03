@@ -1,6 +1,6 @@
 ﻿namespace ProjectTimeTracker.WebAPI.Contracts.Projects.TimeEntries;
 
-public sealed record ProjectTimeEntryUpdateRequestDTO(
+public sealed record ProjectTimeEntryUpdateRequest(
     Guid ProjectId,
     Guid TimeEntryId,
     string? Notes,

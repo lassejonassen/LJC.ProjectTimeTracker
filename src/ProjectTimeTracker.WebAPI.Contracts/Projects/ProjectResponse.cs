@@ -2,7 +2,7 @@
 
 namespace ProjectTimeTracker.WebAPI.Contracts.Projects;
 
-public sealed record ProjectResponseDTO
+public sealed record ProjectResponse
 {
     public required Guid Id { get; init; }
     public required string Name { get; init; }

@@ -26,7 +26,7 @@ public class ProjectsModule : ICarterModule
             if (result.Count == 0)
                 return Results.NoContent();
 
-            var _result = result.Select(x => new ProjectResponseDTO
+            var _result = result.Select(x => new ProjectResponse
             {
                 Id = x.Id,
                 Name = x.Name,
@@ -36,12 +36,12 @@ public class ProjectsModule : ICarterModule
                 UpdatedAtUtc = x.UpdatedAtUtc,
             }).ToList();
 
-            return Results.Ok(new ProjectListResponseDTO(_result));
+            return Results.Ok(new ProjectListResponse(_result));
         })
             .WithName("GetAllProjects")
             .WithDisplayName("Get all projects")
             .WithDescription("Get all projects").WithBadge("GetAll")
-            .Produces<ProjectListResponseDTO>(StatusCodes.Status200OK)
+            .Produces<ProjectListResponse>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status204NoContent);
 
 
@@ -53,7 +53,7 @@ public class ProjectsModule : ICarterModule
             if (result.IsFailure)
                 return result.Error.Handle();
 
-            var _result = new ProjectResponseDTO
+            var _result = new ProjectResponse
             {
                 Id = result.Value.Id,
                 Name = result.Value.Name,
@@ -78,10 +78,10 @@ public class ProjectsModule : ICarterModule
         })
             .WithName("GetProjectById")
             .WithDisplayName("Get project by Id")
-            .Produces<ProjectResponseDTO>(StatusCodes.Status200OK)
+            .Produces<ProjectResponse>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
-        group.MapPost("/", async (ProjectCreateRequestDTO request, IMediator mediator, CancellationToken cancellationToken) =>
+        group.MapPost("/", async (ProjectCreateRequest request, IMediator mediator, CancellationToken cancellationToken) =>
         {
             var command = new CreateProjectCommand(request.Name, request.Description);
 
@@ -96,7 +96,7 @@ public class ProjectsModule : ICarterModule
             .Produces<Guid>(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status400BadRequest);
 
-        group.MapPut("/{projectId:guid}", async (Guid projectId, ProjectUpdateRequestDTO request, IMediator mediator, CancellationToken cancellationToken) =>
+        group.MapPut("/{projectId:guid}", async (Guid projectId, ProjectUpdateRequest request, IMediator mediator, CancellationToken cancellationToken) =>
         {
             if (projectId != request.ProjectId)
                 return ResultsExtensions.MismatchedId(projectId, request.ProjectId);
@@ -114,7 +114,7 @@ public class ProjectsModule : ICarterModule
         .ProducesProblem(StatusCodes.Status400BadRequest)
         .ProducesProblem(StatusCodes.Status404NotFound);
 
-        group.MapPatch("/{projectId:guid}/close", async (Guid projectId, ProjectCloseRequestDTO request, IMediator mediator, CancellationToken cancellationToken) =>
+        group.MapPatch("/{projectId:guid}/close", async (Guid projectId, ProjectCloseRequest request, IMediator mediator, CancellationToken cancellationToken) =>
         {
             if (projectId != request.ProjectId)
                 return ResultsExtensions.MismatchedId(projectId, request.ProjectId);
@@ -131,7 +131,7 @@ public class ProjectsModule : ICarterModule
             .Produces(StatusCodes.Status204NoContent)
         .ProducesProblem(StatusCodes.Status400BadRequest);
 
-        group.MapPatch("/{projectId:guid}/reopen", async (Guid projectId, ProjectReopenRequestDTO request, IMediator mediator, CancellationToken cancellationToken) =>
+        group.MapPatch("/{projectId:guid}/reopen", async (Guid projectId, ProjectReopenRequest request, IMediator mediator, CancellationToken cancellationToken) =>
         {
             if (projectId != request.ProjectId)
                 return ResultsExtensions.MismatchedId(projectId, request.ProjectId);
@@ -165,7 +165,7 @@ public class ProjectsModule : ICarterModule
         var timeEntriesGroup = group.MapGroup("/{projectId:guid}/time-entries")
             .WithTags("Project Time Entries");
 
-        timeEntriesGroup.MapPost("/", async (Guid projectId, ProjectTimeEntryCreateRequestDTO request, IMediator mediator, CancellationToken cancellationToken) =>
+        timeEntriesGroup.MapPost("/", async (Guid projectId, ProjectTimeEntryCreateRequest request, IMediator mediator, CancellationToken cancellationToken) =>
         {
             if (projectId != request.ProjectId)
                 return ResultsExtensions.MismatchedId(projectId, request.ProjectId);
@@ -184,7 +184,7 @@ public class ProjectsModule : ICarterModule
             .ProducesProblem(StatusCodes.Status404NotFound);
 
 
-        timeEntriesGroup.MapPut("/{timeEntryId:guid}", async(Guid projectId, Guid timeEntryId, ProjectTimeEntryUpdateRequestDTO request, IMediator mediator, CancellationToken cancellationToken) =>
+        timeEntriesGroup.MapPut("/{timeEntryId:guid}", async(Guid projectId, Guid timeEntryId, ProjectTimeEntryUpdateRequest request, IMediator mediator, CancellationToken cancellationToken) =>
         {
             if (projectId != request.ProjectId)
                 return ResultsExtensions.MismatchedId(projectId, request.ProjectId);
@@ -205,7 +205,7 @@ public class ProjectsModule : ICarterModule
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
-        timeEntriesGroup.MapPatch("/{timeEntryId:guid}/approve", async (Guid projectId, Guid timeEntryId, ProjectTimeEntryStatusChangeRequestDTO request, IMediator mediator, CancellationToken cancellationToken) =>
+        timeEntriesGroup.MapPatch("/{timeEntryId:guid}/approve", async (Guid projectId, Guid timeEntryId, ProjectTimeEntryStatusChangeRequest request, IMediator mediator, CancellationToken cancellationToken) =>
         {
             if (projectId != request.ProjectId)
                 return ResultsExtensions.MismatchedId(projectId, request.ProjectId);
@@ -226,7 +226,7 @@ public class ProjectsModule : ICarterModule
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
-        timeEntriesGroup.MapPatch("/{timeEntryId:guid}/reject", async (Guid projectId, Guid timeEntryId, ProjectTimeEntryStatusChangeRequestDTO request, IMediator mediator, CancellationToken cancellationToken) =>
+        timeEntriesGroup.MapPatch("/{timeEntryId:guid}/reject", async (Guid projectId, Guid timeEntryId, ProjectTimeEntryStatusChangeRequest request, IMediator mediator, CancellationToken cancellationToken) =>
         {
             if (projectId != request.ProjectId)
                 return ResultsExtensions.MismatchedId(projectId, request.ProjectId);
@@ -247,7 +247,7 @@ public class ProjectsModule : ICarterModule
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
-        timeEntriesGroup.MapPatch("/{timeEntryId:guid}/reopen", async (Guid projectId, Guid timeEntryId, ProjectTimeEntryStatusChangeRequestDTO request, IMediator mediator, CancellationToken cancellationToken) =>
+        timeEntriesGroup.MapPatch("/{timeEntryId:guid}/reopen", async (Guid projectId, Guid timeEntryId, ProjectTimeEntryStatusChangeRequest request, IMediator mediator, CancellationToken cancellationToken) =>
         {
             if (projectId != request.ProjectId)
                 return ResultsExtensions.MismatchedId(projectId, request.ProjectId);
@@ -268,7 +268,7 @@ public class ProjectsModule : ICarterModule
         .ProducesProblem(StatusCodes.Status400BadRequest)
         .ProducesProblem(StatusCodes.Status404NotFound);
 
-        timeEntriesGroup.MapPatch("/{timeEntryId:guid}/submit", async (Guid projectId, Guid timeEntryId, ProjectTimeEntryStatusChangeRequestDTO request, IMediator mediator, CancellationToken cancellationToken) =>
+        timeEntriesGroup.MapPatch("/{timeEntryId:guid}/submit", async (Guid projectId, Guid timeEntryId, ProjectTimeEntryStatusChangeRequest request, IMediator mediator, CancellationToken cancellationToken) =>
         {
             if (projectId != request.ProjectId)
                 return ResultsExtensions.MismatchedId(projectId, request.ProjectId);
