@@ -10,7 +10,10 @@ public class PermissionClaimsTransformation : IClaimsTransformation
         var identity = (ClaimsIdentity)principal.Identity!;
         if (identity.HasClaim(c => c.Type == "permission")) return Task.FromResult(principal);
 
-        var groups = principal.FindAll("group").Select(c => c.Value);
+        var groups = principal.Claims
+            .Where(c => c.Type == "group" || c.Type == "Group" || c.Type.EndsWith("/group"))
+            .Select(c => c.Value)
+            .ToList();
         var permissions = MapGroupsToPermissions(groups);
 
         foreach (var permission in permissions)
@@ -21,16 +24,10 @@ public class PermissionClaimsTransformation : IClaimsTransformation
         return Task.FromResult(principal);
     }
 
-    private IEnumerable<string> MapGroupsToPermissions(IEnumerable<string> groups)
+    private static IEnumerable<string> MapGroupsToPermissions(IEnumerable<string> groups)
     {
-        // Define your mapping logic here
-        var map = new Dictionary<string, string[]>
-        {
-            { "Admins", new[] { "users:read", "users:write", "reports:export" } },
-            { "Managers", new[] { "users:read", "reports:export" } },
-            { "Viewers", new[] { "users:read" } }
-        };
+        var permissions = RolePermissionAssignment.RolePermissionAssignments;
 
-        return groups.SelectMany(g => map.GetValueOrDefault(g, Array.Empty<string>())).Distinct();
+        return groups.SelectMany(g => permissions.GetValueOrDefault(g, [])).Distinct();
     }
 }

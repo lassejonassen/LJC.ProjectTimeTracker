@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.JsonWebTokens;
 using ProjectTimeTracker.Infrastructure.Security;
 using ProjectTimeTracker.WebAPI.Security;
 
@@ -18,6 +19,7 @@ public static class WebApplicationBuilderExtensions
         builder.Services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
 
         builder.Services.ConfigureOptions<ConfigureJwtBearerOptions>();
+        JsonWebTokenHandler.DefaultInboundClaimTypeMap.Clear();
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer();
         builder.Services.AddAuthorization(options =>

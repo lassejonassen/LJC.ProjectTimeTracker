@@ -1,5 +1,6 @@
 ﻿using Carter;
 using ProjectTimeTracker.Application.Abstractions.Messaging;
+using ProjectTimeTracker.Application.Abstractions.Security;
 using ProjectTimeTracker.Application.Projects.Commands;
 using ProjectTimeTracker.Application.Projects.Commands.TimeEntries;
 using ProjectTimeTracker.Application.Projects.Queries;
@@ -44,7 +45,7 @@ public class ProjectsModule : ICarterModule
             .WithDescription("Get all projects").WithBadge("GetAll")
             .Produces<ProjectListResponse>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status204NoContent)
-            .RequireAuthorization("CanView");
+            .RequireAuthorization(Permissions.ProjectsRead);
 
 
         group.MapGet("/{projectId:guid}", async (Guid projectId, IMediator mediator, CancellationToken cancellationToken) =>
@@ -81,7 +82,8 @@ public class ProjectsModule : ICarterModule
             .WithName("GetProjectById")
             .WithDisplayName("Get project by Id")
             .Produces<ProjectResponse>(StatusCodes.Status200OK)
-            .ProducesProblem(StatusCodes.Status404NotFound);
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .RequireAuthorization(Permissions.ProjectsRead);
 
         group.MapPost("/", async (ProjectCreateRequest request, IMediator mediator, CancellationToken cancellationToken) =>
         {
@@ -96,7 +98,8 @@ public class ProjectsModule : ICarterModule
         })
             .WithDisplayName("Create Project")
             .Produces<Guid>(StatusCodes.Status201Created)
-            .ProducesProblem(StatusCodes.Status400BadRequest);
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .RequireAuthorization(Permissions.ProjectsWrite);
 
         group.MapPut("/{projectId:guid}", async (Guid projectId, ProjectUpdateRequest request, IMediator mediator, CancellationToken cancellationToken) =>
         {
@@ -114,7 +117,8 @@ public class ProjectsModule : ICarterModule
         })
             .Produces(StatusCodes.Status204NoContent)
         .ProducesProblem(StatusCodes.Status400BadRequest)
-        .ProducesProblem(StatusCodes.Status404NotFound);
+        .ProducesProblem(StatusCodes.Status404NotFound)
+        .RequireAuthorization(Permissions.ProjectsWrite);
 
         group.MapPatch("/{projectId:guid}/close", async (Guid projectId, ProjectCloseRequest request, IMediator mediator, CancellationToken cancellationToken) =>
         {
@@ -131,7 +135,8 @@ public class ProjectsModule : ICarterModule
             return Results.NoContent();
         })
             .Produces(StatusCodes.Status204NoContent)
-        .ProducesProblem(StatusCodes.Status400BadRequest);
+        .ProducesProblem(StatusCodes.Status400BadRequest)
+        .RequireAuthorization(Permissions.ProjectsWrite);
 
         group.MapPatch("/{projectId:guid}/reopen", async (Guid projectId, ProjectReopenRequest request, IMediator mediator, CancellationToken cancellationToken) =>
         {
@@ -148,7 +153,8 @@ public class ProjectsModule : ICarterModule
             return Results.NoContent();
         })
             .Produces(StatusCodes.Status204NoContent)
-        .ProducesProblem(StatusCodes.Status400BadRequest);
+        .ProducesProblem(StatusCodes.Status400BadRequest)
+        .RequireAuthorization(Permissions.ProjectsWrite);
 
         group.MapDelete("/{projectId:guid}", async (Guid projectId, IMediator mediator, CancellationToken cancellationToken) =>
         {
@@ -165,7 +171,8 @@ public class ProjectsModule : ICarterModule
         .ProducesProblem(StatusCodes.Status404NotFound);
 
         var timeEntriesGroup = group.MapGroup("/{projectId:guid}/time-entries")
-            .WithTags("Project Time Entries");
+            .WithTags("Project Time Entries")
+            .RequireAuthorization(Permissions.ProjectsDelete);
 
         timeEntriesGroup.MapPost("/", async (Guid projectId, ProjectTimeEntryCreateRequest request, IMediator mediator, CancellationToken cancellationToken) =>
         {
@@ -183,7 +190,8 @@ public class ProjectsModule : ICarterModule
         })
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesProblem(StatusCodes.Status404NotFound);
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .RequireAuthorization(Permissions.ProjectsWrite);
 
 
         timeEntriesGroup.MapPut("/{timeEntryId:guid}", async(Guid projectId, Guid timeEntryId, ProjectTimeEntryUpdateRequest request, IMediator mediator, CancellationToken cancellationToken) =>
@@ -205,7 +213,8 @@ public class ProjectsModule : ICarterModule
         })
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesProblem(StatusCodes.Status404NotFound);
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .RequireAuthorization(Permissions.ProjectsWrite);
 
         timeEntriesGroup.MapPatch("/{timeEntryId:guid}/approve", async (Guid projectId, Guid timeEntryId, ProjectTimeEntryStatusChangeRequest request, IMediator mediator, CancellationToken cancellationToken) =>
         {
