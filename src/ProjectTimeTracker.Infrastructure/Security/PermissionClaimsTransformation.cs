@@ -14,6 +14,7 @@ public class PermissionClaimsTransformation : IClaimsTransformation
             .Where(c => c.Type == "group" || c.Type == "Group" || c.Type.EndsWith("/group"))
             .Select(c => c.Value)
             .ToList();
+
         var permissions = MapGroupsToPermissions(groups);
 
         foreach (var permission in permissions)
@@ -28,6 +29,9 @@ public class PermissionClaimsTransformation : IClaimsTransformation
     {
         var permissions = RolePermissionAssignment.RolePermissionAssignments;
 
-        return groups.SelectMany(g => permissions.GetValueOrDefault(g, [])).Distinct();
+        return [.. groups
+            .Where(g => permissions.ContainsKey(g))
+            .SelectMany(g => permissions[g])
+            .Distinct()];
     }
 }

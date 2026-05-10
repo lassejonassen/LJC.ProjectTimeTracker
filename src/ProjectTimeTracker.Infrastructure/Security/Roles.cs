@@ -2,7 +2,7 @@
 
 public static class Roles
 {
-    public const string ProjectMember = "ptt-project-member";
-    public const string ProjectSupervisor = "ptt-project-supervisor";
-    public const string ProjectAdministrator = "ptt-project-administrator";
+    public const string ProjectMember = "ptt-project-members";
+    public const string ProjectSupervisor = "ptt-project-supervisors";
+    public const string ProjectAdministrator = "ptt-project-administrators";
 }
