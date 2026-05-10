@@ -16,7 +16,8 @@ public class ProjectsModule : ICarterModule
     {
         var group = app.MapGroup("/api/projects")
             .WithTags("Projects")
-            .WithDefaultResponses();
+            .WithDefaultResponses()
+            .RequireAuthorization();
 
         group.MapGet("/", async (IMediator mediator, CancellationToken cancellationToken) =>
         {
