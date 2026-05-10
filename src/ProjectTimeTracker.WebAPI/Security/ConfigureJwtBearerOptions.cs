@@ -24,7 +24,7 @@ public class ConfigureJwtBearerOptions(IConfiguration configuration) : IConfigur
             ValidIssuer = authSettings["ValidIssuer"],
             ValidAudience = authSettings["Audience"],
             // Keycloak specific: mapping the roles claim correctly
-            RoleClaimType = "realm_access.roles"
+            RoleClaimType = "group"
         };
     }
 

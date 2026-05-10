@@ -43,7 +43,8 @@ public class ProjectsModule : ICarterModule
             .WithDisplayName("Get all projects")
             .WithDescription("Get all projects").WithBadge("GetAll")
             .Produces<ProjectListResponse>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status204NoContent);
+            .Produces(StatusCodes.Status204NoContent)
+            .RequireAuthorization("CanView");
 
 
         group.MapGet("/{projectId:guid}", async (Guid projectId, IMediator mediator, CancellationToken cancellationToken) =>
