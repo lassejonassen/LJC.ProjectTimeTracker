@@ -1,7 +1,6 @@
 using ProjectTimeTracker.Application;
 using ProjectTimeTracker.Infrastructure;
 using ProjectTimeTracker.WebAPI.Extensions;
-using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
