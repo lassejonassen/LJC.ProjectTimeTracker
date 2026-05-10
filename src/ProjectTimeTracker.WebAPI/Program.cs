@@ -14,13 +14,7 @@ var app = builder.Build();
 
 app.UseDefaults();
 
-app.MapGet("/", () => Results.Redirect("/scalar/v1"));
-
-app.MapGet("/users/me", (ClaimsPrincipal claimsPrincipal) =>
-{
-    return claimsPrincipal.Claims.ToDictionary(c => c.Type, c => c.Value);
-})
-    .RequireAuthorization();
+app.MapGet("/", () => "Healthy");
 
 app.Run();
 
