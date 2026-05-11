@@ -4,12 +4,14 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using ProjectTimeTracker.Application.Abstractions.Interfaces;
 using ProjectTimeTracker.Domain.Authorization;
 using ProjectTimeTracker.Domain.Projects.Repositories;
 using ProjectTimeTracker.Infrastructure.Persistence.DbContexts;
 using ProjectTimeTracker.Infrastructure.Persistence.Interceptors;
 using ProjectTimeTracker.Infrastructure.Persistence.Repositories;
 using ProjectTimeTracker.Infrastructure.Security;
+using ProjectTimeTracker.Infrastructure.Services;
 using Serilog;
 
 namespace ProjectTimeTracker.Infrastructure;
@@ -19,6 +21,7 @@ public static class DependencyInjection
     public static WebApplicationBuilder AddInfrastructure(this WebApplicationBuilder builder)
     {
         builder.Services.AddScoped<IDateTimeProvider, DateTimeProvider>();
+        builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
         builder.AddCustomAuthorization();
         builder.AddLogging();

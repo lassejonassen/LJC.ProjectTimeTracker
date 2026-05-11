@@ -151,7 +151,7 @@ public class ProjectsModule : ICarterModule
             if (projectId != request.ProjectId)
                 return ResultsExtensions.MismatchedId(projectId, request.ProjectId);
 
-            var command = new CreateProjectTimeEntryCommand(projectId, "SYSTEM_USER", request.Notes, request.Hours);
+            var command = new CreateProjectTimeEntryCommand(projectId, request.Notes, request.Hours);
             var result = await mediator.Send(command, ct);
 
             return result.IsFailure ? result.Error.Handle() : Results.NoContent();
