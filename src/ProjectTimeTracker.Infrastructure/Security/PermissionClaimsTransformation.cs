@@ -7,31 +7,32 @@ public class PermissionClaimsTransformation : IClaimsTransformation
 {
     public Task<ClaimsPrincipal> TransformAsync(ClaimsPrincipal principal)
     {
-        var identity = (ClaimsIdentity)principal.Identity!;
-        if (identity.HasClaim(c => c.Type == "permission")) return Task.FromResult(principal);
-
-        var groups = principal.Claims
-            .Where(c => c.Type == "group" || c.Type == "Group" || c.Type.EndsWith("/group"))
-            .Select(c => c.Value)
-            .ToList();
-
-        var permissions = MapGroupsToPermissions(groups);
-
-        foreach (var permission in permissions)
+        if (principal.HasClaim(c => c.Type == "permission"))
         {
-            identity.AddClaim(new Claim("permission", permission));
+            return Task.FromResult(principal);
         }
 
+        List<string> permissions = [];
+
+        if (principal.IsInRole(Roles.ProjectAdministrator))
+            permissions.AddRange(RolePermissionAssignment.RolePermissionAssignments[Roles.ProjectAdministrator]);
+
+        if (principal.IsInRole(Roles.ProjectSupervisor))
+            permissions.AddRange(RolePermissionAssignment.RolePermissionAssignments[Roles.ProjectSupervisor]);
+
+        if (principal.IsInRole(Roles.ProjectMember))
+            permissions.AddRange(RolePermissionAssignment.RolePermissionAssignments[Roles.ProjectMember]);
+
+        permissions = [.. permissions.Distinct()];
+
+        var claimsIdentity = new ClaimsIdentity();
+
+        foreach (var permission in permissions)
+            claimsIdentity.AddClaim(new Claim("permission", permission));
+
+        principal.AddIdentity(claimsIdentity);
+
+
         return Task.FromResult(principal);
-    }
-
-    private static IEnumerable<string> MapGroupsToPermissions(IEnumerable<string> groups)
-    {
-        var permissions = RolePermissionAssignment.RolePermissionAssignments;
-
-        return [.. groups
-            .Where(g => permissions.ContainsKey(g))
-            .SelectMany(g => permissions[g])
-            .Distinct()];
     }
 }

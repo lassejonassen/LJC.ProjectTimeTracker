@@ -1,11 +1,15 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using ProjectTimeTracker.Domain.Authorization;
 using ProjectTimeTracker.Domain.Projects.Repositories;
 using ProjectTimeTracker.Infrastructure.Persistence.DbContexts;
 using ProjectTimeTracker.Infrastructure.Persistence.Interceptors;
 using ProjectTimeTracker.Infrastructure.Persistence.Repositories;
+using ProjectTimeTracker.Infrastructure.Security;
 using Serilog;
 
 namespace ProjectTimeTracker.Infrastructure;
@@ -16,8 +20,10 @@ public static class DependencyInjection
     {
         builder.Services.AddScoped<IDateTimeProvider, DateTimeProvider>();
 
+        builder.AddCustomAuthorization();
         builder.AddLogging();
         builder.AddPersistence();
+
 
         return builder;
     }
@@ -68,6 +74,23 @@ public static class DependencyInjection
             .ReadFrom.Configuration(context.Configuration)
             .ReadFrom.Services(services)
             .Enrich.FromLogContext());
+
+        return builder;
+    }
+
+    private static WebApplicationBuilder AddCustomAuthorization(this WebApplicationBuilder builder)
+    {
+        var authorizationBuilder = builder.Services.AddAuthorizationBuilder();
+
+        var permissions = Permissions.GetRegisteredPermissions();
+
+        foreach (string permission in permissions)
+        {
+            authorizationBuilder.AddPolicy(permission, policy => policy.Requirements.Add(new PermissionRequirement(permission)));
+        }
+
+        builder.Services.AddTransient<IClaimsTransformation, PermissionClaimsTransformation>();
+        builder.Services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
 
         return builder;
     }
