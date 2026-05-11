@@ -9,10 +9,8 @@ public static partial class ApplicationBuilderExtensions
     {
         using IServiceScope scope = app.ApplicationServices.CreateScope();
 
-        // Resolve the environment service from the scope
         var env = scope.ServiceProvider.GetRequiredService<IWebHostEnvironment>();
 
-        // Only execute migrations if we are in the Development environment
         if (env.IsDevelopment())
         {
             scope.ServiceProvider
