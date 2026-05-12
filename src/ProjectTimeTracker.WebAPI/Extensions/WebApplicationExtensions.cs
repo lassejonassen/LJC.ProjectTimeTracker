@@ -21,7 +21,7 @@ public static class WebApplicationExtensions
             });
         });
 
-        app.UseHttpsRedirection();
+        //app.UseHttpsRedirection();
 
         app.MapCarter();
 

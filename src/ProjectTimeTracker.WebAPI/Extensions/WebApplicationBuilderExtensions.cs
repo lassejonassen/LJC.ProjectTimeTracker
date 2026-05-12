@@ -22,15 +22,7 @@ public static class WebApplicationBuilderExtensions
         JsonWebTokenHandler.DefaultInboundClaimTypeMap.Clear();
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer();
-        builder.Services.AddAuthorization(options =>
-        {
-            // Example Policy
-            options.AddPolicy("CanWriteUsers", policy =>
-                policy.AddRequirements(new PermissionRequirement("users:write")));
-
-            options.AddPolicy("CanViewReports", policy =>
-                policy.AddRequirements(new PermissionRequirement("reports:export")));
-        });
+        builder.Services.AddAuthorization();
 
         builder.Services.AddOpenApi(options =>
         {

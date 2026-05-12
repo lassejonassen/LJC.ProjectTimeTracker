@@ -6,8 +6,8 @@ services:
     environment:
       - ACCEPT_EULA=Y
       - MSSQL_SA_PASSWORD=YourStrongPassword123!
-    ports:
-      - "1433:1433"
+    # ports:
+    #   - "1433:1433"
 
   # Your existing Web API
   projecttimetracker.webapi:
@@ -16,7 +16,8 @@ services:
       context: .
       dockerfile: src/ProjectTimeTracker.WebAPI/Dockerfile
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Compose
+      - ASPNETCORE_URLS=http://+:8080
       - ConnectionStrings__Database=Server=sql_server_2025;Database=TimeTrackerDb;User Id=sa;Password=YourStrongPassword123!;TrustServerCertificate=True;
     depends_on:
       - sql.db

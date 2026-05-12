@@ -5,7 +5,7 @@ using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddDefaults("ProjectTimeTracker");
+builder.AddDefaults("project-time-tracker-api");
 
 builder.Services.AddApplication();
 builder.AddInfrastructure();
