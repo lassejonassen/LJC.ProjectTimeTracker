@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Options;
 using ProjectTimeTracker.Application;
 using ProjectTimeTracker.Infrastructure;
 using ProjectTimeTracker.WebAPI.Extensions;
@@ -18,6 +20,18 @@ app.MapGet("/", () => "Healthy");
 
 app.MapGet("/auth-debug", (ClaimsPrincipal user) =>
     user.Claims.Select(c => new { c.Type, c.Value }));
+
+app.MapGet("/config-debug", (IConfiguration config) =>
+{
+    return config.AsEnumerable()
+                 .OrderBy(c => c.Key)
+                 .Select(c => new { c.Key, c.Value });
+});
+
+using (var scope = app.Services.CreateScope())
+{
+    var options = scope.ServiceProvider.GetRequiredService<IOptions<JwtBearerOptions>>().Value;
+}
 
 app.Run();
 

@@ -15,6 +15,12 @@ public static class WebApplicationBuilderExtensions
         if (string.IsNullOrWhiteSpace(serviceName))
             serviceName = builder.Environment.ApplicationName;
 
+        builder.Configuration
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: false, reloadOnChange: true)
+            .AddEnvironmentVariables();
+
         builder.Services.AddTransient<IClaimsTransformation, PermissionClaimsTransformation>();
         builder.Services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
 

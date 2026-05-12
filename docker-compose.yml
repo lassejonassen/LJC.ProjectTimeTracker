@@ -16,7 +16,7 @@ services:
       context: .
       dockerfile: src/ProjectTimeTracker.WebAPI/Dockerfile
     environment:
-      - ASPNETCORE_ENVIRONMENT=Compose
+      - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080
       - ConnectionStrings__Database=Server=sql_server_2025;Database=TimeTrackerDb;User Id=sa;Password=YourStrongPassword123!;TrustServerCertificate=True;
     depends_on:

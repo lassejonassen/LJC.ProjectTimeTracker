@@ -8,7 +8,7 @@ public class ConfigureJwtBearerOptions(IConfiguration configuration) : IConfigur
 {
     public void Configure(string? name, JwtBearerOptions options)
     {
-        if (name != JwtBearerDefaults.AuthenticationScheme) return;
+        if (name != JwtBearerDefaults.AuthenticationScheme && name != Options.DefaultName) return;
 
         var authSettings = configuration.GetSection("Authentication");
 
