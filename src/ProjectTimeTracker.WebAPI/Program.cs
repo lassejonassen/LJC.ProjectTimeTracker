@@ -21,12 +21,9 @@ app.MapGet("/", () => "Healthy");
 app.MapGet("/auth-debug", (ClaimsPrincipal user) =>
     user.Claims.Select(c => new { c.Type, c.Value }));
 
-app.MapGet("/config-debug", (IConfiguration config) =>
-{
-    return config.AsEnumerable()
+app.MapGet("/config-debug", (IConfiguration config) => config.AsEnumerable()
                  .OrderBy(c => c.Key)
-                 .Select(c => new { c.Key, c.Value });
-});
+                 .Select(c => new { c.Key, c.Value }));
 
 using (var scope = app.Services.CreateScope())
 {

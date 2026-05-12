@@ -22,6 +22,7 @@ public static class DependencyInjection
     {
         builder.Services.AddScoped<IDateTimeProvider, DateTimeProvider>();
         builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+        builder.Services.AddSingleton<IAuthorizationMiddlewareResultHandler, CustomAuthorizationHandler>();
 
         builder.AddCustomAuthorization();
         builder.AddLogging();
