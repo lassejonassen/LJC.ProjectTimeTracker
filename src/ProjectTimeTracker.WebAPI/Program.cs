@@ -25,10 +25,5 @@ app.MapGet("/config-debug", (IConfiguration config) => config.AsEnumerable()
                  .OrderBy(c => c.Key)
                  .Select(c => new { c.Key, c.Value }));
 
-using (var scope = app.Services.CreateScope())
-{
-    var options = scope.ServiceProvider.GetRequiredService<IOptions<JwtBearerOptions>>().Value;
-}
-
 app.Run();
 
