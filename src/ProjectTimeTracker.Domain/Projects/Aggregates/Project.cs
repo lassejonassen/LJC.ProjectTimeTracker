@@ -158,4 +158,16 @@ public sealed class Project : AggregateRoot
 
         return Result.Success();
     }
+
+    public Result RemoveTimeEntry(Guid timeEntryId)
+    {
+        var timeEntry = _timeEntries.FirstOrDefault(x => x.Id == timeEntryId);
+
+        if (timeEntry is null)
+            return Result.Failure(ProjectErrors.TimeEntryNotFound);
+
+        _timeEntries.Remove(timeEntry);
+
+        return Result.Success();
+    }
 }

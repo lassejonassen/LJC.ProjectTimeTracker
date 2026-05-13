@@ -205,6 +205,13 @@ public class ProjectsModule : ICarterModule
             .Produces(StatusCodes.Status204NoContent)
             .RequireAuthorization(Permissions.Projects.ProjectTimeEntries.Submit);
 
+        timeEntriesGroup.MapDelete("/{timeEntryId}", async (Guid projectId, Guid timeEntryId, IMediator mediator, CancellationToken ct) =>
+        {
+            var result = await mediator.Send(new DeleteProjectTimeEntryCommand(projectId, timeEntryId), ct);
+            return result.IsFailure ? result.Error.Handle() : Results.NoContent();
+        })
+            .Produces(StatusCodes.Status204NoContent)
+            .RequireAuthorization(Permissions.Projects.ProjectTimeEntries.Delete);
         #endregion
     }
 }
